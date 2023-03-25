@@ -26,6 +26,8 @@ body {
     align-items: end;
     justify-content: space-between;
 
+    height: 48px;
+
     margin: 2px;
     padding: 2px;
 
@@ -62,4 +64,9 @@ button {
 button:hover {
     color: inherit;
     background-color: grey;
+}
+
+
+.equals, .clear{
+flex: 1;
 }

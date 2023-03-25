@@ -5,6 +5,8 @@ let operator = '';
 const currentDisplayNumber = document.querySelector('.currentNumber');
 const previousDisplayNumber = document.querySelector('.previousNumber');
 
+window.addEventListener("keydown", handleKeyPress);
+
 const equal = document.querySelector('.equals');
 equal.addEventListener('click', () => {
     if (currentNum != '' && previousNum != '') {
@@ -14,6 +16,9 @@ equal.addEventListener('click', () => {
 
 const clear = document.querySelector('.clear');
 clear.addEventListener('click', clearScreen);
+
+const del = document.querySelector('.del');
+del.addEventListener('click', deleteOne);
 
 // const decimal = document.querySelector('.decimal');
 const numberButtons = document.querySelectorAll('.number');
@@ -37,15 +42,16 @@ function getValue(key) {
 };
 
 function handleOperator(op) {
-    if (previousNum == '') {
+    if (previousNum === '') {
         previousNum = currentNum;
         anotherOperator(op);
-    } else if (currentNum == '') {
+    } else if (currentNum === '') {
         anotherOperator(op);
     } else {
         calculate();
         operator = op;
         currentDisplayNumber.textContent = '';
+        previousDisplayNumber.textContent = previousNum + ' ' + operator;
     }
 }
 function anotherOperator(op) {
@@ -59,21 +65,18 @@ function calculate() {
     previousNum = Number(previousNum);
     currentNum = Number(currentNum);
 
-    switch (operator) {
-        case '+':
-            previousNum += currentNum;
-            break;
-        case '-':
-            previousNum -= currentNum;
-            break;
-        case 'x':
-            previousNum *= currentNum;
-            break;
-        case '/':
-            previousNum /= currentNum;
-    }
+    if (operator === '+') {
+        previousNum += currentNum;
+    } else if (operator === '-') {
+        previousNum -= currentNum;
+    } else if (operator === 'x') {
+        previousNum *= currentNum;
+    } else if (operator === '/') {
+      previousNum /= currentNum;
+    } 
     currentNum = '';
     previousNum = previousNum.toString();
+    console.log(previousNum + ' & ' + currentNum);
     displayResults();
 }
 
@@ -86,12 +89,43 @@ function clearScreen() {
 }
 
 function displayResults() {
-    previousDisplayNumber.textContent = '';
+    previousDisplayNumber.textContent = previousNum;
     operator = '';
     if (previousNum.length < 12) {
-        //reduces length of string to show only 12 digits
         currentDisplayNumber.textContent = previousNum;
     } else {
         currentDisplayNumber.textContent = previousNum.slice(0, 11) + '...';
     }
 }
+
+function deleteOne() {
+    //did this all on my own. Much simpler than Rob's solution.
+    currentNum = currentNum.slice(0, currentNum.length - 1);
+    currentDisplayNumber.textContent = currentNum;
+}
+
+function handleKeyPress(e) {
+    //fully copied. Did not learn this yet. 
+    e.preventDefault();
+    if (e.key >= 0 && e.key <= 9) {
+      getValue(e.key);
+    }
+    if (
+      e.key === "Enter" ||
+      (e.key === "=" && currentNum != "" && previousNum != "")
+    ) {
+      calculate();
+    }
+    if (e.key === "+" || e.key === "-" || e.key === "/") {
+      handleOperator(e.key);
+    }
+    if (e.key === "*") {
+      handleOperator("x");
+    }
+    if (e.key === ".") {
+      addDecimal();
+    }
+    if (e.key === "Backspace") {
+      deleteOne();
+    }
+  }
